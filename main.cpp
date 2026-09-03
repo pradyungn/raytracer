@@ -29,25 +29,25 @@ unsigned char* getColor(unsigned char a, unsigned char b, unsigned char c){
    r[2] = c;
    return r;
 }
-     
+
 int W = 1000, H = 1000;
 
 unsigned char* DATA = (unsigned char*)malloc(W*H*3*sizeof(unsigned char));
 unsigned char get(int i, int j, int k){
-   return DATA[3*(i+j*W)+k]; 
+   return DATA[3*(i+j*W)+k];
 }
 unsigned char* getPos(int i, int j){
-   return &DATA[3*(i+j*W)]; 
+   return &DATA[3*(i+j*W)];
 }
 void set(int i, int j, unsigned char r, unsigned char g, unsigned char b){
-   DATA[3*(i+j*W)] = r; 
-   DATA[3*(i+j*W)+1] = g; 
-   DATA[3*(i+j*W)+2] = b; 
+   DATA[3*(i+j*W)] = r;
+   DATA[3*(i+j*W)+1] = g;
+   DATA[3*(i+j*W)+2] = b;
 }
 
 void refresh(Autonoma* c){
-   for(int n = 0; n<H*W; ++n) 
-   { 
+   for(int n = 0; n<H*W; ++n)
+   {
       Vector ra = c->camera.forward+((double)(n%W)/W-.5)*((c->camera.right))+(.5-(double)(n/W)/H)*((c->camera.up));
       calcColor(&DATA[3*n], c, Ray(c->camera.focus, ra), 0);
    }
@@ -192,7 +192,7 @@ unsigned int* getTriangles(FILE* f, int len){
 }
 
 Autonoma* createInputs(const char* inputFile) {
-   
+
    double camera_x = 0;
    double camera_y = 2;
    double camera_z = 0;
@@ -320,7 +320,7 @@ Autonoma* createInputs(const char* inputFile) {
             fclose(vectors);
             unsigned int* polys = getTriangles(triangles, num_polygons);
             fclose(triangles);
-            Vector offset(off_x, off_y, off_z); 
+            Vector offset(off_x, off_y, off_z);
             for(int i = 0; i<num_polygons; i++){
                Triangle* shape = new Triangle(points[polys[3*i]] + offset, points[polys[3*i+1]] + offset, points[polys[3*i+2]] + offset, texture);
                MAIN_DATA->addShape(shape);
@@ -522,7 +522,7 @@ int main(int argc, const char** argv){
          if (png) {
             outFile = "output/output.png";
          } else {
-            outFile = "output/output.ppm";            
+            outFile = "output/output.ppm";
          }
       } else {
          outFile = "output/output.mp4";
@@ -530,28 +530,30 @@ int main(int argc, const char** argv){
    }
 
    Autonoma* MAIN_DATA = createInputs(inFile);
-   
+
    int frame;
    char command[200];
-   
-  struct timeval start, end;
+
+   struct timeval start, end;
    gettimeofday(&start, NULL);
+   // START OPT REGION
    for(frame = 0; frame<frameLen; frame++) {
-      setFrame(animateFile, MAIN_DATA, frame, frameLen);      
+      setFrame(animateFile, MAIN_DATA, frame, frameLen);
       if (frameLen == 1) {
-         snprintf(command, sizeof(command), "%s", outFile);    
+         snprintf(command, sizeof(command), "%s", outFile);
       } else if (png) {
          snprintf(command, sizeof(command), "%s.tmp.%07d.png", outFile, frame);
       } else {
          snprintf(command, sizeof(command), "%s.tmp.%07d.ppm", outFile, frame);
       }
       if (png) {
-         output(command); 
+         output(command);
       } else {
-         outputPPM(command); 
-      }     
+         outputPPM(command);
+      }
       printf("Done Frame %7d|\n", frame);
    }
+   // END OPT REGION
 
    gettimeofday(&end, NULL);
    printf("Total time to create images=%0.6f seconds\n", tdiff(&start, &end));
@@ -560,10 +562,10 @@ int main(int argc, const char** argv){
       if (png) {
          snprintf(command, sizeof(command), "ffmpeg -y -r 24 -i %s.tmp.%%07d.png -vcodec ffv1 %s.tmp.avi && ffmpeg -y -i %s.tmp.avi -c:v libx264 -preset veryslow -qp 0 -r 24 %s", outFile, outFile, outFile, outFile);
       } else {
-         snprintf(command, sizeof(command), "ffmpeg -y -r 24 -i %s.tmp.%%07d.ppm -vcodec ffv1 %s.tmp.avi && ffmpeg -y -i %s.tmp.avi -c:v libx264 -preset veryslow -qp 0 -r 24 %s", outFile, outFile, outFile, outFile);         
+         snprintf(command, sizeof(command), "ffmpeg -y -r 24 -i %s.tmp.%%07d.ppm -vcodec ffv1 %s.tmp.avi && ffmpeg -y -i %s.tmp.avi -c:v libx264 -preset veryslow -qp 0 -r 24 %s", outFile, outFile, outFile, outFile);
       }
       return system(command);
-   }   
+   }
    return 0;
-   
+
 }

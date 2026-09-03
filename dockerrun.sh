@@ -1,1 +1,2 @@
-docker run -it -v --security-opt seccomp=unconfined `pwd`:/host wsmoses/598ape /bin/bash
+#!/bin/bash
+docker run -it --security-opt seccomp=unconfined -v $HOME:/host pradyun2/598ape /bin/bash

@@ -1,6 +1,8 @@
 #include "plane.h"
 
-Plane::Plane(const Vector &c, Texture* t, double ya, double pi, double ro, double tx, double ty) : Shape(c, t, ya, pi, ro), vect(c), right(c), up(c){
+Plane::Plane(const Vector &c, Texture* t, double ya,
+             double pi, double ro, double tx, double ty) :
+  Shape(c, t, ya, pi, ro), vect(c), right(c), up(c) {
    textureX = tx; textureY = ty;
    setAngles(yaw, pitch, roll);
    normalMap = NULL;
@@ -31,13 +33,13 @@ void Plane::setYaw(double a){
    yaw =a;
    xcos = cos(yaw);
    xsin = sin(yaw);
-   
+
    vect.x = xsin*ycos*zcos+ysin*zsin;
    vect.y = ysin*zcos-xsin*ycos*zsin;
    vect.z = xcos*ycos;
    up.x = -xsin*ysin*zcos+ycos*zsin;
    up.y = ycos*zcos+xsin*ysin*zsin;
-   up.z = -xcos*ysin;   
+   up.z = -xcos*ysin;
    right.x = xcos*zcos;
    right.y = -xcos*zsin;
    right.z = -xsin;
@@ -74,7 +76,7 @@ void Plane::setRoll(double c){
 }
 
 double Plane::getIntersection(Ray ray){
-   const double t = ray.vector.dot(vect);
+   const double t    = ray.vector.dot(vect);
    const double norm = vect.dot(ray.point)+d;
    const double r = -norm/t;
    return (r>0)?r:inf;
@@ -86,7 +88,7 @@ bool Plane::getLightIntersection(Ray ray, double* fill){
    const double r = -norm/t;
    if(r<=0. || r>=1.) return false;
 
-   if(texture->opacity>1-1E-6) return true;   
+   if(texture->opacity>1-1E-6) return true;
    Vector dist = solveScalers(right, up, vect, ray.point-center);
    unsigned char temp[4];
    double amb, op, ref;

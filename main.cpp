@@ -536,9 +536,11 @@ int main(int argc, const char** argv){
 
    struct timeval start, end;
    gettimeofday(&start, NULL);
+
    // START OPT REGION
    for(frame = 0; frame<frameLen; frame++) {
       setFrame(animateFile, MAIN_DATA, frame, frameLen);
+
       if (frameLen == 1) {
          snprintf(command, sizeof(command), "%s", outFile);
       } else if (png) {
@@ -546,11 +548,15 @@ int main(int argc, const char** argv){
       } else {
          snprintf(command, sizeof(command), "%s.tmp.%07d.ppm", outFile, frame);
       }
+
       if (png) {
+         // output eventually routes into outputPPM
          output(command);
       } else {
+        // this routes down to snprintf, so library function
          outputPPM(command);
       }
+
       printf("Done Frame %7d|\n", frame);
    }
    // END OPT REGION

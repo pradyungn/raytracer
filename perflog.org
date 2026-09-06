@@ -1,0 +1,8 @@
+#+title: Perf Log
+
+Incremental tracking of perf improvements from various changes. Tracking all times on the provided course VM.
+
+| Version          | Piano Time | Globe Time | Elephant Time  |
+|------------------+------------+------------+----------------|
+| Baseline         |       2.33 |     147.99 | (way too long) |
+| Better =g++= Flags |      1.093 |     295.43 | (way too long) |

@@ -1,5 +1,5 @@
 FUNC := g++
-copt := -c 
+copt := -c
 OBJ_DIR := ./bin/
 FLAGS := -O3 -lm -g -Werror
 
@@ -11,6 +11,11 @@ TEXTURE_OBJ_FILES := $(addprefix $(OBJ_DIR)Textures/,$(notdir $(TEXTURE_CPP_FILE
 
 all:
 	cd ./src && make
+	$(FUNC) ./main.cpp -o ./main.exe ./src/*.obj ./src/Textures/*.obj $(FLAGS)
+
+opt: export FLAGS := -O3 -lm -g -Werror -ffast-math -fopt-info-vec -fopt-info-vec-missed -march=native
+opt:
+	cd ./src && make FLAGS='$(FLAGS)'
 	$(FUNC) ./main.cpp -o ./main.exe ./src/*.obj ./src/Textures/*.obj $(FLAGS)
 
 clean:

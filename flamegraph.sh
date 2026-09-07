@@ -26,4 +26,4 @@ case $1 in
 esac
 
 perf script > perfs.out
-cat perfs.out | ./$FGPATH/stackcollapse-perf.pl | ./$FGPATH/flamegraph.pl --colors=js > profile.svg
+cat perfs.out | ./$FGPATH/stackcollapse-perf.pl | ./$FGPATH/flamegraph.pl --colors=js > $1.svg

@@ -1,9 +1,10 @@
 #+title: Perf Log
 
-Incremental tracking of perf improvements from various changes. Tracking all times on the provided course VM.
+Incremental tracking of perf improvements from various changes. Tracking all times on the provided course VM. One-shot times for now, will do this exhaustively at the end.
 
-| Version           | Piano Time | Globe Time | Elephant Time  |
-|-------------------+------------+------------+----------------|
-| Baseline          |       2.33 |     147.99 | (way too long) |
-| O3 for submodules |       1.13 |       87.9 | (way too long) |
-| O3 + ffastmath    |      1.093 |     295.43 | (way too long) |
+| Version                  | Piano Time | Globe Time | Elephant Time  |
+|--------------------------+------------+------------+----------------|
+| Baseline                 |       2.33 |     147.99 | (way too long) |
+| O3 for submodules        |       1.13 |       87.9 | (way too long) |
+| O3 + ffastmath           |      1.093 |     295.43 | (way too long) |
+| reduction for calc_color |   0.871639 |     68.936 |  37.92         |

@@ -40,9 +40,9 @@ Triangle::Triangle(Vector c, Vector b, Vector a, Texture* t):Plane(Vector(0,0,0)
 
 double Triangle::getIntersection(Ray ray){
    double time = Plane::getIntersection(ray);
-   if(time==inf) 
+   if(time==inf)
       return time;
-   Vector dist = solveScalers(right, up, vect, ray.point+ray.vector*time-center); 
+   Vector dist = solveScalers(right, up, vect, ray.point+ray.vector*time-center);
    unsigned char tmp = (thirdX - dist.x) * textureY + (thirdX-textureX) * (dist.y - textureY) < 0.0;
    return((tmp!=(textureX * dist.y < 0.0)) || (tmp != (dist.x * textureY - thirdX * dist.y < 0.0)))?inf:time;
 }

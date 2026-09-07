@@ -1,4 +1,5 @@
 #include "shape.h"
+#include <iostream>
 
 Shape::Shape(const Vector &c, Texture* t, double ya, double pi, double ro):
   center(c), texture(t), yaw(ya), pitch(pi), roll(ro){
@@ -51,22 +52,18 @@ void insertionSort(TimeAndShape *arr, int n) {
 
 void calcColor(unsigned char* toFill,Autonoma* c, Ray ray, unsigned int depth){
    ShapeNode* t = c->listStart;
-   TimeAndShape *times = (TimeAndShape*)malloc(0);
    size_t seen = 0;
+
+   TimeAndShape mintime = { inf, NULL };
+
+   // linked list iteration, pull running minimum
    while(t!=NULL){
       double time = t->data->getIntersection(ray);
-
-      TimeAndShape *times2 = (TimeAndShape*)malloc(sizeof(TimeAndShape)*(seen + 1));
-      for (int i=0; i<seen; i++)
-         times2[i] = times[i];
-      times2[seen] = (TimeAndShape){ time, t->data };
-      free(times);
-      times = times2;
-      seen ++;
+      if (time < mintime.time) { mintime = { time, t->data}; }
       t = t->next;
    }
-   insertionSort(times, seen);
-   if (seen == 0 || times[0].time == inf) {
+
+   if (mintime.time == inf) {
       double opacity, reflection, ambient;
       Vector temp = ray.vector.normalize();
       const double x = temp.x;
@@ -77,14 +74,13 @@ void calcColor(unsigned char* toFill,Autonoma* c, Ray ray, unsigned int depth){
       return;
    }
 
-   double curTime = times[0].time;
-   Shape* curShape = times[0].shape;
-   free(times);
+   double curTime = mintime.time;
+   Shape* curShape = mintime.shape;
 
    Vector intersect = curTime*ray.vector+ray.point;
    double opacity, reflection, ambient;
    curShape->getColor(toFill, &ambient, &opacity, &reflection, c, Ray(intersect, ray.vector), depth);
-   
+
    double lightData[3];
    getLight(lightData, c, intersect, curShape->getNormal(intersect), curShape->reversible());
    toFill[0] = (unsigned char)(toFill[0]*(ambient+lightData[0]*(1-ambient)));
@@ -97,14 +93,13 @@ void calcColor(unsigned char* toFill,Autonoma* c, Ray ray, unsigned int depth){
          calcColor(col, c, nextRay, depth+1);
          toFill[0]= (unsigned char)(toFill[0]*opacity+col[0]*(1-opacity));
          toFill[1]= (unsigned char)(toFill[1]*opacity+col[1]*(1-opacity));
-         toFill[2]= (unsigned char)(toFill[2]*opacity+col[2]*(1-opacity));        
+         toFill[2]= (unsigned char)(toFill[2]*opacity+col[2]*(1-opacity));
       }
       if(reflection>1e-6){
          Vector norm = curShape->getNormal(intersect).normalize();
          Vector vec = ray.vector-2*norm*(norm.dot(ray.vector));
          Ray nextRay = Ray(intersect+vec*1E-4, vec);
          calcColor(col, c, nextRay, depth+1);
-      
          toFill[0]= (unsigned char)(toFill[0]*(1-reflection)+col[0]*(reflection));
          toFill[1]= (unsigned char)(toFill[1]*(1-reflection)+col[1]*(reflection));
          toFill[2]= (unsigned char)(toFill[2]*(1-reflection)+col[2]*(reflection));

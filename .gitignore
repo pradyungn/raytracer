@@ -2,3 +2,5 @@ main.exe
 output/*
 src/**/*.obj
 **/*.svg
+**/*.data*
+**/*.out

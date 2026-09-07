@@ -1,4 +1,5 @@
 #include "plane.h"
+#include <iostream>
 
 Plane::Plane(const Vector &c, Texture* t, double ya,
              double pi, double ro, double tx, double ty) :
@@ -78,6 +79,7 @@ void Plane::setRoll(double c){
 double Plane::getIntersection(Ray ray){
    const double t    = ray.vector.dot(vect);
    const double norm = vect.dot(ray.point)+d;
+
    const double r = -norm/t;
    return (r>0)?r:inf;
 }

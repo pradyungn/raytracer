@@ -11,6 +11,7 @@
 class Vector{
 public:
   double x, y, z;
+  Vector();
   Vector(double a, double b, double c);
   
   

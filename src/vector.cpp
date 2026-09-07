@@ -7,6 +7,8 @@
 #include <stddef.h>
 #include "vector.h"
 
+Vector::Vector() : x(0), y(0), z(0) {
+}
 Vector::Vector(double a, double b, double c) : x(a), y(b), z(c) {
 }
 void Vector::operator -= (const Vector rhs) {

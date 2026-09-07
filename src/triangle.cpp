@@ -7,6 +7,9 @@ Triangle::Triangle(Vector c, Vector b, Vector a, Texture* t):Plane(Vector(0,0,0)
    right = righta/textureX;
    vect = right.cross(b-a).normalize();
 
+   bmc = righta;
+   amc = a - c;
+
    xsin = -right.z;
    if(xsin<-1.)xsin = -1;
    else if (xsin>1.)xsin=1.; 
@@ -31,20 +34,38 @@ Triangle::Triangle(Vector c, Vector b, Vector a, Texture* t):Plane(Vector(0,0,0)
    up.y = ycos*zcos+xsin*ysin*zsin;
    up.z = -xcos*ysin;
    Vector temp = vect.cross(right);
-   Vector np = solveScalers(right, up, vect, a-c);
+   Vector np = solveScalers(right, up, vect, amc);
    textureY = np.y;
    thirdX = np.x;
    
    d = -vect.dot(center);
 }
 
+// replaced w/ the Moller-Trumbore intersection algo
+// some C++ code pulled out of the wikipedia page
 double Triangle::getIntersection(Ray ray){
-   double time = Plane::getIntersection(ray);
-   if(time==inf)
-      return time;
-   Vector dist = solveScalers(right, up, vect, ray.point+ray.vector*time-center);
-   unsigned char tmp = (thirdX - dist.x) * textureY + (thirdX-textureX) * (dist.y - textureY) < 0.0;
-   return((tmp!=(textureX * dist.y < 0.0)) || (tmp != (dist.x * textureY - thirdX * dist.y < 0.0)))?inf:time;
+  const double eps = 1e-9;
+  Vector ray_xamc = ray.vector.cross(amc);
+  double det = bmc.dot(ray_xamc);
+
+  // dropped backface culling, make output "patchy"
+
+  // check if parallel
+  if (det < eps && det > -eps) return inf;
+
+  double idet = 1.0/det;
+  Vector s = ray.point - center;
+  double u = idet * s.dot(ray_xamc);
+
+  if (u < -eps || u - 1 > eps) return inf;
+
+  Vector s_xbmc = s.cross(bmc);
+  double v = idet * ray.vector.dot(s_xbmc);
+
+  if (v < -eps || u + v - 1 > eps) return inf;
+
+  double t = idet * amc.dot(s_xbmc);
+  return (t > eps) ? t : inf;
 }
 
 bool Triangle::getLightIntersection(Ray ray, double* fill){

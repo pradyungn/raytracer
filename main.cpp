@@ -185,7 +185,6 @@ Vector *getVectors(FILE *f, int len) {
 }
 unsigned int *getTriangles(FILE *f, int len) {
   unsigned int *vec = (unsigned int *)malloc(3 * len * sizeof(unsigned int));
-  int a, b, d;
   for (int i = 0; i < 3 * len; i += 3) {
     if (fscanf(f, "%d %d %d\n", &vec[i], &vec[i + 1], &vec[i + 2]) == EOF) {
       printf("Failed to read triangles\n");

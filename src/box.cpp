@@ -12,8 +12,8 @@ double Box::getIntersection(Ray ray) {
   if (time == inf)
     return time;
 
-  Vector dist =
-      solveScalers(right, up, vect, ray.point + ray.vector * time - center);
+  Vector dist = cached_cramers(quadrant_dets, basis_det,
+                               ray.point + ray.vector * time - center);
   return (std::fabs(dist.x) > textureX / 2 || std::fabs(dist.y) > textureY / 2)
              ? inf
              : time;
@@ -25,8 +25,8 @@ bool Box::getLightIntersection(Ray ray, double *fill) {
   const double r = -norm / t;
   if (r <= 0. || r >= 1.)
     return false;
-  Vector dist =
-      solveScalers(right, up, vect, ray.point + ray.vector * r - center);
+  Vector dist = cached_cramers(quadrant_dets, basis_det,
+                               ray.point + ray.vector * r - center);
   if (std::fabs(dist.x) > textureX / 2 || std::fabs(dist.y) > textureY / 2)
     return false;
 

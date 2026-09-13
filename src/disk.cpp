@@ -7,8 +7,8 @@ double Disk::getIntersection(Ray ray) {
   double time = Plane::getIntersection(ray);
   if (time == inf)
     return time;
-  Vector dist =
-      solveScalers(right, up, vect, ray.point + ray.vector * time - center);
+  Vector dist = cached_cramers(quadrant_dets, basis_det,
+                               ray.point + ray.vector * time - center);
   return (dist.x * dist.x / (textureX * textureX) +
               dist.y * dist.y / (textureY * textureY) >
           1)
@@ -22,8 +22,8 @@ bool Disk::getLightIntersection(Ray ray, double *fill) {
   const double r = -norm / t;
   if (r <= 0. || r >= 1.)
     return false;
-  Vector dist =
-      solveScalers(right, up, vect, ray.point + ray.vector * r - center);
+  Vector dist = cached_cramers(quadrant_dets, basis_det,
+                               ray.point + ray.vector * r - center);
   if (texture->opacity > 1 - 1E-6)
     return true;
   unsigned char temp[4];
@@ -34,8 +34,6 @@ bool Disk::getLightIntersection(Ray ray, double *fill) {
       1)
     return false;
   // fix arguments, before offset by .5, are guaranteed to be [-1, 1]
-
-  double normx;
 
   // conditional opts will be slower than just doing this normally
   texture->getColor(temp, &amb, &op, &ref, fix(dist.x / textureX - .5),

@@ -2,13 +2,17 @@
 
 Incremental tracking of perf improvements from various changes. Tracking all times on the provided course VM. One-shot times for now, will do this exhaustively at the end.
 
-| Version                       | Piano Time | Globe Time | Elephant Time  |
-|-------------------------------+------------+------------+----------------|
-| Baseline                      |       2.33 |     147.99 | (way too long) |
-| O3 for submodules             |       1.13 |       87.9 | (way too long) |
-| O3 + ffastmath                |      1.093 |     295.43 | (way too long) |
-| reduction for calc_color      |   0.871639 |     68.936 | 37.92          |
-| Moller-Trombore isect algo    |      0.872 |     69.012 | 22.98          |
-| fabs instead of ternary (box) |      0.807 |         -- | --             |
+| Version                                 | Piano Time | Globe Time | Elephant Time  |
+|-----------------------------------------+------------+------------+----------------|
+| Baseline                                |       2.33 |     147.99 | (way too long) |
+| O3 for submodules                       |       1.13 |       87.9 | (way too long) |
+| O3 + ffastmath                          |      1.093 |     295.43 | (way too long) |
+| reduction for calc_color                |   0.871639 |     68.936 | 37.92          |
+| Moller-Trombore isect algo              |      0.872 |     69.012 | 22.98          |
+| fabs instead of ternary (box)           |      0.807 |         -- | --             |
+| partial caching (plane isect cramer's)  |      0.792 |      66.5s | 24.9           |
+| box + triangle partial cramer's caching |      0.699 |      66.3s | 24.07          |
 
 Based on [[https://courses.physics.illinois.edu/cs418/fa2025/text/rays.html][this page]], we will likely need a binary space partitioning or what the internet calls a "Bounded Volume Hierarchy". Good presentation on different partitioning methods [[https://webhome.cs.uvic.ca/~blob/courses/305/notes/pdf/Ray%20Tracing%20with%20Spatial%20Hierarchies.pdf][here]].
+
+We found that =-ffast-math= causes segfaults once box caching is added, but it's unclear why!

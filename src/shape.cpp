@@ -54,8 +54,6 @@ void insertionSort(TimeAndShape *arr, int n) {
 void calcColor(unsigned char *toFill, Autonoma *c, Ray ray,
                unsigned int depth) {
   ShapeNode *t = c->listStart;
-  size_t seen = 0;
-
   TimeAndShape mintime = {inf, NULL};
 
   // linked list iteration, pull running minimum

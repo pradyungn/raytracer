@@ -50,7 +50,8 @@ void Autonoma::addShape(Shape *r) {
 void Autonoma::removeShape(ShapeNode *s) {
   if (s == listStart) {
     if (s == listEnd) {
-      listStart = listStart = NULL;
+      listStart = NULL;
+      listStart = NULL;
     } else {
       listStart = s->next;
       listStart->prev = NULL;
@@ -82,7 +83,8 @@ void Autonoma::addLight(Light *r) {
 void Autonoma::removeLight(LightNode *s) {
   if (s == lightStart) {
     if (s == lightEnd) {
-      lightStart = lightStart = NULL;
+      lightStart = NULL;
+      lightStart = NULL;
     } else {
       lightStart = s->next;
       lightStart->prev = NULL;

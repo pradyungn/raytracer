@@ -3,20 +3,18 @@
 
 FGPATH=../FlameGraph
 
+COMMAND=""
 case $1 in
     "pianoroom")
-        perf record -e cycles:u -g -- \
-         ./main.exe -i inputs/pianoroom.ray --ppm -o output/pianoroom.ppm -H 500 -W 500
+         COMMAND="./main.exe -i inputs/pianoroom.ray --ppm -o output/pianoroom.ppm -H 500 -W 500"
     ;;
 
     "globe")
-        perf record -e cycles:u -g -- \
-         ./main.exe -i inputs/globe.ray --ppm  -a inputs/globe.animate --movie -F 24
+         COMMAND="./main.exe -i inputs/globe.ray --ppm  -a inputs/globe.animate --movie -F 24"
     ;;
 
     "elephant")
-        perf record -e cycles:u -g -- \
-         ./main.exe -i inputs/elephant.ray --ppm  -a inputs/elephant.animate -F 24 -W 100 -H 100
+         COMMAND="./main.exe -i inputs/elephant.ray --ppm  -a inputs/elephant.animate -F 24 -W 100 -H 100"
     ;;
 
     *)
@@ -25,5 +23,10 @@ case $1 in
         ;;
 esac
 
-perf script > perfs.out
-cat perfs.out | ./$FGPATH/stackcollapse-perf.pl | ./$FGPATH/flamegraph.pl --colors=js > $1.svg
+if [ "$#" -eq 2 ]; then
+    $COMMAND
+else
+    perf record -e cycles:u -g -- $COMMAND
+    perf script > perfs.out
+    cat perfs.out | ./$FGPATH/stackcollapse-perf.pl | ./$FGPATH/flamegraph.pl --colors=js > $1.svg
+fi

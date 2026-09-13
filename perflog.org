@@ -14,6 +14,7 @@ Incremental tracking of perf improvements from various changes. Tracking all tim
 | partial cramer's caching (all plane-children) |      0.699 |      66.3s |          24.07 |
 | OMP pragma over refresh loop                  |      0.283 |      35.94 |          9.306 |
 | change OMP schedule to guided                 |      0.185 |      17.11 |           6.16 |
+| guided OMP w/o caching                        |      0.205 |      17.46 |           6.36 |
 
 Based on [[https://courses.physics.illinois.edu/cs418/fa2025/text/rays.html][this page]], we will likely need a binary space partitioning or what the internet calls a "Bounded Volume Hierarchy". Good presentation on different partitioning methods [[https://webhome.cs.uvic.ca/~blob/courses/305/notes/pdf/Ray%20Tracing%20with%20Spatial%20Hierarchies.pdf][here]].
 

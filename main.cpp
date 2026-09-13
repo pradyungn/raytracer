@@ -42,6 +42,7 @@ void set(int i, int j, unsigned char r, unsigned char g, unsigned char b) {
 }
 
 void refresh(Autonoma *c) {
+#pragma omp parallel for
   for (int n = 0; n < H * W; ++n) { // iterate over window bounds
     // each pixel emits a ray -- we should be able to parallelize over rays
     // stupid idea is to just use OpenMP here for naive parallelism

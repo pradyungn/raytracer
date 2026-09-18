@@ -141,7 +141,7 @@ Vector Plane::projectBasis(Vector C) {
   return Vector(
                 C.dot(right),
                 C.dot(up),
-                C.dot(vect)
+                C.dot(vect) // Z never actually used, maybe remove
                );
 }
 

@@ -107,3 +107,22 @@ bool Triangle::getLightIntersection(Ray ray, double *fill) {
   fill[2] *= temp[2] / 255.;
   return false;
 }
+
+std::array<Vector, 2> Triangle::getBoundingBox() {
+  Vector a = center + amc;
+  Vector b = center + bmc;
+
+  return {
+    Vector(
+           std::min(a.x, std::min(b.x, center.x)),
+           std::min(a.y, std::min(b.y, center.y)),
+           std::min(a.z, std::min(b.z, center.z))
+          ),
+
+    Vector(
+           std::max(a.x, std::max(b.x, center.x)),
+           std::max(a.y, std::max(b.y, center.y)),
+           std::max(a.z, std::max(b.z, center.z))
+          )
+  };
+}

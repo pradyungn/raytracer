@@ -12,8 +12,7 @@ double Box::getIntersection(Ray ray) {
   if (time == inf)
     return time;
 
-  Vector dist = cached_cramers(quadrant_dets, basis_det,
-                               ray.point + ray.vector * time - center);
+  Vector dist = projectBasis(ray.point + ray.vector * time - center);
   return (std::fabs(dist.x) > textureX / 2 || std::fabs(dist.y) > textureY / 2)
              ? inf
              : time;
@@ -25,7 +24,7 @@ bool Box::getLightIntersection(Ray ray, double *fill) {
   const double r = -norm / t;
   if (r <= 0. || r >= 1.)
     return false;
-  Vector dist = cached_cramers(quadrant_dets, basis_det,
+  Vector dist = projectBasis(
                                ray.point + ray.vector * r - center);
   if (std::fabs(dist.x) > textureX / 2 || std::fabs(dist.y) > textureY / 2)
     return false;
@@ -43,4 +42,11 @@ bool Box::getLightIntersection(Ray ray, double *fill) {
   fill[1] *= temp[1] / 255.;
   fill[2] *= temp[2] / 255.;
   return false;
+}
+
+std::array<Vector, 2> Box::getBoundingBox() {
+  Vector extent = Vector(std::max(std::fabs(up.x), std::fabs(right.x)),
+                         std::max(std::fabs(up.y), std::fabs(right.y)),
+                         std::max(std::fabs(up.z), std::fabs(right.z)));
+  return { center - extent, center + extent };
 }

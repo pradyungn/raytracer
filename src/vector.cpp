@@ -106,14 +106,4 @@ Vector solveScalers(Vector v1, Vector v2, Vector v3, Vector C) {
   return Vector(a / denom, b / denom, c / denom);
 }
 
-Vector cached_cramers(double *quadrant_dets, double basis_det, Vector C) {
-  double a1 =
-      quadrant_dets[1] * C.z + quadrant_dets[4] * C.x + quadrant_dets[7] * C.y;
-  double a2 =
-      quadrant_dets[2] * C.z + quadrant_dets[5] * C.x + quadrant_dets[8] * C.y;
-  double a3 =
-      quadrant_dets[0] * C.z + quadrant_dets[3] * C.x + quadrant_dets[6] * C.y;
-  return Vector(a1 / basis_det, a2 / basis_det, a3 / basis_det);
-}
-
 Ray::Ray(const Vector &po, const Vector &ve) : point(po), vector(ve) {}

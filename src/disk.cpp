@@ -7,8 +7,7 @@ double Disk::getIntersection(Ray ray) {
   double time = Plane::getIntersection(ray);
   if (time == inf)
     return time;
-  Vector dist = cached_cramers(quadrant_dets, basis_det,
-                               ray.point + ray.vector * time - center);
+  Vector dist = projectBasis(ray.point + ray.vector * time - center);
   return (dist.x * dist.x / (textureX * textureX) +
               dist.y * dist.y / (textureY * textureY) >
           1)
@@ -22,8 +21,7 @@ bool Disk::getLightIntersection(Ray ray, double *fill) {
   const double r = -norm / t;
   if (r <= 0. || r >= 1.)
     return false;
-  Vector dist = cached_cramers(quadrant_dets, basis_det,
-                               ray.point + ray.vector * r - center);
+  Vector dist = projectBasis(ray.point + ray.vector * r - center);
   if (texture->opacity > 1 - 1E-6)
     return true;
   unsigned char temp[4];

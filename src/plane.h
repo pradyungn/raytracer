@@ -21,10 +21,7 @@ public:
   void setPitch(double d);
   void setRoll(double d);
   std::array<Vector, 2> getBoundingBox();
-
-  // cache determinants for transform
-  double basis_det;
-  double quadrant_dets[9];
+  Vector projectBasis(Vector C);
 };
 
 #endif

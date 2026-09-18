@@ -47,6 +47,21 @@ void Plane::setAngles(double a, double b, double c) {
   right.y = -xcos * zsin;
   right.z = -xsin;
   d = -vect.dot(center);
+
+  quadrant_dets[0] = right.x * up.y - up.x * right.y;
+  quadrant_dets[1] = up.x * vect.y - vect.x * up.y;
+  quadrant_dets[2] = vect.x * right.y - right.x * vect.y;
+
+  quadrant_dets[3] = right.y * up.z - up.y * right.z;
+  quadrant_dets[4] = up.y * vect.z - vect.y * up.z;
+  quadrant_dets[5] = vect.y * right.z - right.y * vect.z;
+
+  quadrant_dets[6] = right.z * up.x - up.z * right.x;
+  quadrant_dets[7] = up.z * vect.x - vect.z * up.x;
+  quadrant_dets[8] = vect.z * right.x - right.z * vect.x;
+
+  basis_det = quadrant_dets[0] * vect.z + quadrant_dets[3] * vect.x +
+              quadrant_dets[6] * vect.y;
 }
 
 void Plane::setYaw(double a) {
@@ -64,6 +79,21 @@ void Plane::setYaw(double a) {
   right.y = -xcos * zsin;
   right.z = -xsin;
   d = -vect.dot(center);
+
+  quadrant_dets[0] = right.x * up.y - up.x * right.y;
+  quadrant_dets[1] = up.x * vect.y - vect.x * up.y;
+  quadrant_dets[2] = vect.x * right.y - right.x * vect.y;
+
+  quadrant_dets[3] = right.y * up.z - up.y * right.z;
+  quadrant_dets[4] = up.y * vect.z - vect.y * up.z;
+  quadrant_dets[5] = vect.y * right.z - right.y * vect.z;
+
+  quadrant_dets[6] = right.z * up.x - up.z * right.x;
+  quadrant_dets[7] = up.z * vect.x - vect.z * up.x;
+  quadrant_dets[8] = vect.z * right.x - right.z * vect.x;
+
+  basis_det = quadrant_dets[0] * vect.z + quadrant_dets[3] * vect.x +
+              quadrant_dets[6] * vect.y;
 }
 
 void Plane::setPitch(double b) {
@@ -77,6 +107,21 @@ void Plane::setPitch(double b) {
   up.y = ycos * zcos + xsin * ysin * zsin;
   up.z = -xcos * ysin;
   d = -vect.dot(center);
+
+  quadrant_dets[0] = right.x * up.y - up.x * right.y;
+  quadrant_dets[1] = up.x * vect.y - vect.x * up.y;
+  quadrant_dets[2] = vect.x * right.y - right.x * vect.y;
+
+  quadrant_dets[3] = right.y * up.z - up.y * right.z;
+  quadrant_dets[4] = up.y * vect.z - vect.y * up.z;
+  quadrant_dets[5] = vect.y * right.z - right.y * vect.z;
+
+  quadrant_dets[6] = right.z * up.x - up.z * right.x;
+  quadrant_dets[7] = up.z * vect.x - vect.z * up.x;
+  quadrant_dets[8] = vect.z * right.x - right.z * vect.x;
+
+  basis_det = quadrant_dets[0] * vect.z + quadrant_dets[3] * vect.x +
+              quadrant_dets[6] * vect.y;
 }
 
 void Plane::setRoll(double c) {
@@ -93,6 +138,21 @@ void Plane::setRoll(double c) {
   right.y = -xcos * zsin;
   // right.z = -xsin;
   d = -vect.dot(center);
+
+  quadrant_dets[0] = right.x * up.y - up.x * right.y;
+  quadrant_dets[1] = up.x * vect.y - vect.x * up.y;
+  quadrant_dets[2] = vect.x * right.y - right.x * vect.y;
+
+  quadrant_dets[3] = right.y * up.z - up.y * right.z;
+  quadrant_dets[4] = up.y * vect.z - vect.y * up.z;
+  quadrant_dets[5] = vect.y * right.z - right.y * vect.z;
+
+  quadrant_dets[6] = right.z * up.x - up.z * right.x;
+  quadrant_dets[7] = up.z * vect.x - vect.z * up.x;
+  quadrant_dets[8] = vect.z * right.x - right.z * vect.x;
+
+  basis_det = quadrant_dets[0] * vect.z + quadrant_dets[3] * vect.x +
+              quadrant_dets[6] * vect.y;
 }
 
 double Plane::getIntersection(Ray ray) {

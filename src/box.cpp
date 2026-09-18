@@ -45,8 +45,8 @@ bool Box::getLightIntersection(Ray ray, double *fill) {
 }
 
 std::array<Vector, 2> Box::getBoundingBox() {
-  Vector extent = Vector(std::max(std::fabs(up.x), std::fabs(right.x)),
-                         std::max(std::fabs(up.y), std::fabs(right.y)),
-                         std::max(std::fabs(up.z), std::fabs(right.z)));
+  Vector extent = Vector(std::max(std::fabs(up.x)*textureY/2, std::fabs(right.x)*textureX/2),
+                         std::max(std::fabs(up.y)*textureY/2, std::fabs(right.y)*textureX/2),
+                         std::max(std::fabs(up.z)*textureY/2, std::fabs(right.z)*textureX/2));
   return { center - extent, center + extent };
 }

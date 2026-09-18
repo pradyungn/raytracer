@@ -370,12 +370,30 @@ Autonoma *createInputs(const char *inputFile) {
           MAIN_DATA->addShape(shape);
           shape->normalMap = normalMap;
         }
+        free(points);
+        free(polys);
       } else {
         printf("Unknown object type %s\n", object_type);
         exit(1);
       }
     }
   }
+
+  auto ptr = MAIN_DATA->listStart;
+  std::vector<SizedShape> shapes;
+  while (ptr != NULL) {
+    auto box = ptr->data->getBoundingBox();
+    if (box[0].x == inf) {
+      MAIN_DATA->planes.push_back(ptr->data);
+      ptr = ptr -> next;
+      continue;
+    }
+    Vector center = (box[0] + box[1])/2.0;
+    shapes.push_back({ ptr->data, center, box});
+    ptr = ptr -> next;
+  }
+
+  MAIN_DATA->shapeTree = buildTree(shapes);
 
   return MAIN_DATA;
 }
@@ -486,9 +504,22 @@ void setFrame(const char *animateFile, Autonoma *MAIN_DATA, int frame,
         exit(1);
       }
     }
-    // finish reading input
 
-    // TODO: rebuild BVH here
+    auto ptr = MAIN_DATA->listStart;
+    std::vector<SizedShape> shapes;
+    while (ptr != NULL) {
+      auto box = ptr->data->getBoundingBox();
+      if (box[0].x == inf) {
+        ptr = ptr->next;
+        continue;
+      }
+      Vector center = (box[0] + box[1])/2.0;
+      shapes.push_back({ ptr->data, center, box});
+      ptr = ptr -> next;
+    }
+
+    freeTree(MAIN_DATA->shapeTree);
+    MAIN_DATA->shapeTree = buildTree(shapes);
   }
 
   refresh(MAIN_DATA);
@@ -673,5 +704,29 @@ int main(int argc, const char **argv) {
     return system(command);
   }
 
+  freeTree(MAIN_DATA->shapeTree);
+
+  auto lptr = MAIN_DATA->lightStart;
+  while (lptr != NULL) {
+    auto tmp = lptr;
+    free(lptr->data->color);
+    delete lptr->data;
+    lptr = lptr->next;
+    free(tmp);
+  }
+
+  // maybe move into a destructor for Autonoma
+  auto ptr = MAIN_DATA->listStart;
+  while (ptr != NULL) {
+    auto tmp = ptr;
+    delete ptr->data->texture;
+    delete ptr->data->normalMap;
+    delete ptr->data;
+    ptr = ptr->next;
+    free(tmp);
+  }
+
+  delete MAIN_DATA->skybox;
+  delete MAIN_DATA;
   return 0;
 }

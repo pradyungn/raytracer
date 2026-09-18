@@ -12,6 +12,7 @@ public:
   Triangle(Vector c, Vector b, Vector a, Texture *t);
   double getIntersection(Ray ray);
   bool getLightIntersection(Ray ray, double *fill);
+  std::array<Vector, 2> getBoundingBox();
 };
 
 #endif

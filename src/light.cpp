@@ -1,7 +1,8 @@
-
 #include "light.h"
 #include "camera.h"
 #include "shape.h"
+#include <vector>
+#include <algorithm>
 
 Light::Light(const Vector &cente, unsigned char *colo) : center(cente) {
   color = colo;
@@ -110,16 +111,11 @@ void getLight(double *tColor, Autonoma *aut, Vector point, Vector norm,
     lightColor[1] = t->data->color[1] / 255.;
     lightColor[2] = t->data->color[2] / 255.;
     Vector ra = t->data->center - point;
-    ShapeNode *shapeIter = aut->listStart;
 
     // keeps going until hit... ?
     // should just pas back object from the outer call. what are we doing.
-    bool hit = false;
-    while (!hit && shapeIter != NULL) {
-      hit = shapeIter->data->getLightIntersection(Ray(point + ra * .01, ra),
-                                                  lightColor);
-      shapeIter = shapeIter->next;
-    }
+    Ray search = Ray(point + ra * .01, ra);
+    bool hit = isectLightTree(aut->shapeTree, search, lightColor);
     double perc = (norm.dot(ra) / (ra.mag() * norm.mag()));
     if (!hit) {
       if (flip && perc < 0)

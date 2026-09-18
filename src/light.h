@@ -4,6 +4,8 @@
 #include "camera.h"
 #include "Textures/texture.h"
 #include "Textures/colortexture.h"
+#include <array>
+#include <vector>
 
 class Light{
   public:
@@ -24,17 +26,24 @@ struct ShapeNode{
    ShapeNode* prev, *next;
 };
 
+struct SizedShape {
+  Shape* shape;
+  Vector center;
+  std::array<Vector, 2> box;
+};
+
+typedef struct {
+  double time;
+  Shape *shape;
+} TimeAndShape;
+
 struct BVHNode {
   // bounding box
-  Vector min, max;
-
-  // split_axis 0=x, 1=y, 2=z
-  // may not be needed...?
-  unsigned char splax;
+  Vector box[2];
 
   // is this a literal shape?
   bool is_shape;
-  ShapeNode *shape;
+  std::vector<Shape*> shapes;
 
   // if not a shape, we branch again
   BVHNode *left, *right;
@@ -58,7 +67,10 @@ public:
    void removeLight(LightNode* s);
 };
 
-BVHNode* buildTree(ShapeNode* list);
+BVHNode* buildTree(std::vector<SizedShape> list);
+void freeTree(BVHNode* node);
+TimeAndShape isectTree(BVHNode* node, Ray &r);
+bool isectLightTree(BVHNode* node, Ray &r, double* fill);
 void getLight(double* toFill, Autonoma* aut, Vector point, Vector norm, unsigned char r);
 
 #endif

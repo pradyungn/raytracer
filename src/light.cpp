@@ -1,7 +1,8 @@
-
 #include "light.h"
 #include "camera.h"
 #include "shape.h"
+#include <vector>
+#include <algorithm>
 
 Light::Light(const Vector &cente, unsigned char *colo) : center(cente) {
   color = colo;
@@ -140,7 +141,89 @@ void getLight(double *tColor, Autonoma *aut, Vector point, Vector norm,
   }
 }
 
-BVHNode* buildTree(ShapeNode* list) {
-  [[maybe_unused]] auto _ = list;
-  return NULL;
+
+struct {
+    bool operator()(SizedShape a, SizedShape b) const {
+      return a.center.x > b.center.x;
+    }
+} x_extractor;
+
+struct {
+    bool operator()(SizedShape a, SizedShape b) const {
+      return a.center.y > b.center.y;
+    }
+} y_extractor;
+
+struct {
+    bool operator()(SizedShape a, SizedShape b) const {
+      return a.center.z > b.center.z;
+    }
+} z_extractor;
+
+BVHNode* buildTree(std::vector<SizedShape> list) {
+  Vector superbox[2] = { list[0].box[0], list[0].box[1] };
+  for (auto shape: list) {
+    superbox[0].x = std::min(shape.box[0].x, superbox[0].x);
+    superbox[0].y = std::min(shape.box[0].y, superbox[0].y);
+    superbox[0].z = std::min(shape.box[0].z, superbox[0].z);
+
+    superbox[1].x = std::max(shape.box[1].x, superbox[1].x);
+    superbox[1].y = std::max(shape.box[1].y, superbox[1].y);
+    superbox[1].z = std::max(shape.box[1].z, superbox[1].z);
+  }
+
+  const unsigned int NODE_MAX_OBJ = 5;
+  if (list.size() > NODE_MAX_OBJ) {
+    // decide which extent
+    Vector extent = superbox[1] - superbox[0];
+    int splaxis = ((extent.z > extent.x) && (extent.z > extent.y))? 2: ((extent.x > extent.y) ?  0 : 1);
+
+    // auto partition = list.begin();
+    if (splaxis == 0) {
+      std::sort(list.begin(), list.begin() + list.size(), x_extractor);
+      // partition = std::lower_bound(list.begin(), list.begin()+list.size(),
+      //                              SizedShape{ NULL, superbox[0] + (extent/2),
+      //                                          { Vector(), Vector()} }, x_extractor);
+    } else if (splaxis == 1) {
+      std::sort(list.begin(), list.begin() + list.size(), y_extractor);
+      // partition = std::lower_bound(list.begin(), list.begin()+list.size(),
+      //                              SizedShape{ NULL, superbox[0] + (extent/2),
+      //                                          { Vector(), Vector()} }, y_extractor);
+    } else {
+      std::sort(list.begin(), list.begin() + list.size(), z_extractor);
+      // partition = std::lower_bound(list.begin(), list.begin()+list.size(),
+      //                              SizedShape{ NULL, superbox[0] + (extent/2),
+      //                                          { Vector(), Vector()} }, z_extractor);
+    }
+
+    // avoid weird recursive edgecase
+    // if (partition == list.end()) {
+    //   partition--;
+    // }
+    // if (partition == list.begin()) {
+    //   partition++;
+    // }
+
+    auto partition = list.begin() + (list.size()/2);
+
+    std::vector<SizedShape> before(list.begin(), partition), after(partition, list.end());
+    return new BVHNode{
+      { superbox[0], superbox[1] }, false, std::vector<Shape*>(), buildTree(before), buildTree(after)
+    };
+  } else {
+    std::vector<Shape*> shapes;
+    for (const auto& node: list) shapes.push_back(node.shape);
+    // early exit -- just construct a node with superbox and dipe
+    return new BVHNode{
+      { superbox[0], superbox[1] }, true, shapes, NULL, NULL
+    };
+  }
+}
+
+void freeTree(BVHNode* node) {
+  if (node == NULL) return;
+  freeTree(node->left);
+  freeTree(node->right);
+
+  delete node;
 }

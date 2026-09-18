@@ -18,4 +18,6 @@ Incremental tracking of perf improvements from various changes. Tracking all tim
 
 Based on [[https://courses.physics.illinois.edu/cs418/fa2025/text/rays.html][this page]], we will likely need a binary space partitioning or what the internet calls a "Bounded Volume Hierarchy". Good presentation on different partitioning methods [[https://webhome.cs.uvic.ca/~blob/courses/305/notes/pdf/Ray%20Tracing%20with%20Spatial%20Hierarchies.pdf][here]].
 
+Another good resource, recursive BVH and tree construction presentation [[https://cs184.eecs.berkeley.edu/sp25/assets/lectures/09-10-ray-tracing+acceleration.pdf#page=31][here]].
+
 We found that =-ffast-math= causes segfaults once box caching is added, but it's unclear why!

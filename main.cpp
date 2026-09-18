@@ -365,6 +365,21 @@ Autonoma *createInputs(const char *inputFile) {
     }
   }
 
+  auto ptr = MAIN_DATA->listStart;
+  std::vector<SizedShape> shapes;
+  while (ptr != NULL) {
+    auto box = ptr->data->getBoundingBox();
+    if (box[0].x == inf) {
+      // TODO dump into plane array
+      continue;
+    }
+    Vector center = (box[0] + box[1])/2.0;
+    shapes.push_back({ ptr->data, center, box});
+    ptr = ptr -> next;
+  }
+
+  MAIN_DATA->shapeTree = buildTree(shapes);
+
   return MAIN_DATA;
 }
 
@@ -474,9 +489,21 @@ void setFrame(const char *animateFile, Autonoma *MAIN_DATA, int frame,
         exit(1);
       }
     }
-    // finish reading input
 
-    // TODO: rebuild BVH here
+    auto ptr = MAIN_DATA->listStart;
+    std::vector<SizedShape> shapes;
+    while (ptr != NULL) {
+      auto box = ptr->data->getBoundingBox();
+      if (box[0].x == inf) {
+        continue;
+      }
+      Vector center = (box[0] + box[1])/2.0;
+      shapes.push_back({ ptr->data, center, box});
+      ptr = ptr -> next;
+    }
+
+    freeTree(MAIN_DATA->shapeTree);
+    MAIN_DATA->shapeTree = buildTree(shapes);
   }
 
   refresh(MAIN_DATA);

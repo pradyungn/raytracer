@@ -45,3 +45,15 @@ bool Disk::getLightIntersection(Ray ray, double *fill) {
   fill[2] *= temp[2] / 255.;
   return false;
 }
+
+// bounding box of an ellipse:
+// https://web.archive.org/web/20120620045116/https://iquilezles.org/www/articles/ellipses/ellipses.htm
+std::array<Vector, 2> Disk::getBoundingBox() {
+  Vector up_s = up * textureY;
+  Vector right_s = right * textureX;
+  Vector extent = Vector(sqrt(up_s.x * up_s.x + right_s.x * right_s.x),
+                         sqrt(up_s.y * up_s.y + right_s.y * right_s.y),
+                         sqrt(up_s.z * up_s.z + right_s.z * right_s.z));
+
+  return { center - extent, center + extent };
+}

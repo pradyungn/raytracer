@@ -20,6 +20,7 @@ public:
   void setYaw(double d);
   void setPitch(double d);
   void setRoll(double d);
+  std::array<Vector, 2> getBoundingBox();
 
   // cache determinants for transform
   double basis_det;

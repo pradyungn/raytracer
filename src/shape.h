@@ -1,6 +1,7 @@
 #ifndef __SHAPE_H__
 #define __SHAPE_H__
 #include "light.h"
+#include <array>
 
 class Shape {
 public:
@@ -22,6 +23,7 @@ public:
   virtual void setYaw(double d) = 0;
   virtual void setPitch(double d) = 0;
   virtual void setRoll(double d) = 0;
+  virtual std::array<Vector, 2> getBoundingBox() = 0; // return 2 Vectors
 };
 
 void calcColor(unsigned char *toFill, Autonoma *, Ray ray, unsigned int depth);

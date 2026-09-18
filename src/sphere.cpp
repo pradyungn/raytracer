@@ -125,3 +125,8 @@ void Sphere::setRoll(double c) {
   zcos = cos(roll);
   zsin = sin(roll);
 }
+
+std::array<Vector, 2> Sphere::getBoundingBox() {
+  Vector extent = Vector(radius, radius, radius);
+  return { center - extent, center + extent};
+}

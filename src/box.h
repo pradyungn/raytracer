@@ -8,6 +8,7 @@ public:
   Box(const Vector &c, Texture* t, double ya, double pi, double ro, double tx);
   double getIntersection(Ray ray);
   bool getLightIntersection(Ray ray, double* fill);
+  std::array<Vector, 2> getBoundingBox();
 };
 
 #endif

@@ -139,3 +139,8 @@ void getLight(double *tColor, Autonoma *aut, Vector point, Vector norm,
     t = t->next;
   }
 }
+
+BVHNode* buildTree(ShapeNode* list) {
+  [[maybe_unused]] auto _ = list;
+  return NULL;
+}

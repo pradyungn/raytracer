@@ -475,6 +475,8 @@ void setFrame(const char *animateFile, Autonoma *MAIN_DATA, int frame,
       }
     }
     // finish reading input
+
+    // TODO: rebuild BVH here
   }
 
   refresh(MAIN_DATA);

@@ -150,3 +150,7 @@ Vector Plane::getNormal(Vector point) {
     return ret;
   }
 }
+
+std::array<Vector, 2> Plane::getBoundingBox() {
+  return {Vector(inf, inf, inf), Vector(inf, inf, inf)};
+}

@@ -24,6 +24,22 @@ struct ShapeNode{
    ShapeNode* prev, *next;
 };
 
+struct BVHNode {
+  // bounding box
+  Vector min, max;
+
+  // split_axis 0=x, 1=y, 2=z
+  // may not be needed...?
+  unsigned char splax;
+
+  // is this a literal shape?
+  bool is_shape;
+  ShapeNode *shape;
+
+  // if not a shape, we branch again
+  BVHNode *left, *right;
+};
+
 class Autonoma{
 public:
    Camera camera;
@@ -31,6 +47,7 @@ public:
    unsigned int depth;
    ShapeNode *listStart, *listEnd;
    LightNode *lightStart, *lightEnd;
+   BVHNode shapeTree;
    Autonoma(const Camera &c);
    Autonoma(const Camera &c, Texture* tex);
    void addShape(Shape* s);
@@ -39,6 +56,7 @@ public:
    void removeLight(LightNode* s);
 };
 
+BVHNode* buildTree(ShapeNode* list);
 void getLight(double* toFill, Autonoma* aut, Vector point, Vector norm, unsigned char r);
 
 #endif

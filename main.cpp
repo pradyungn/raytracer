@@ -370,7 +370,8 @@ Autonoma *createInputs(const char *inputFile) {
   while (ptr != NULL) {
     auto box = ptr->data->getBoundingBox();
     if (box[0].x == inf) {
-      // TODO dump into plane array
+      MAIN_DATA->planes.push_back(ptr->data);
+      ptr = ptr -> next;
       continue;
     }
     Vector center = (box[0] + box[1])/2.0;
@@ -658,5 +659,7 @@ int main(int argc, const char **argv) {
     }
     return system(command);
   }
+
+  freeTree(MAIN_DATA->shapeTree);
   return 0;
 }

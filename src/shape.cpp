@@ -2,7 +2,7 @@
 #include <iostream>
 
 Shape::Shape(const Vector &c, Texture *t, double ya, double pi, double ro)
-    : center(c), texture(t), yaw(ya), pitch(pi), roll(ro) {};
+: center(c), texture(t), yaw(ya), pitch(pi), roll(ro), mapOffX(0.0), mapOffY(0.0) {};
 
 void Shape::setAngles(double a, double b, double c) {
   yaw = a;

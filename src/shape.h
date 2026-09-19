@@ -6,6 +6,7 @@
 class Shape {
 public:
   Shape(const Vector &c, Texture *t, double ya, double pi, double ro);
+  virtual ~Shape() = default;
   Vector center;
   Texture *texture;
   double yaw, pitch, roll, xsin, xcos, ysin, ycos, zsin, zcos;

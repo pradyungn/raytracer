@@ -47,7 +47,9 @@ public:
    unsigned int depth;
    ShapeNode *listStart, *listEnd;
    LightNode *lightStart, *lightEnd;
-   BVHNode shapeTree;
+   std::vector<Shape*> planes;
+   std::vector<Texture*> textures;
+   BVHNode* shapeTree;
    Autonoma(const Camera &c);
    Autonoma(const Camera &c, Texture* tex);
    void addShape(Shape* s);

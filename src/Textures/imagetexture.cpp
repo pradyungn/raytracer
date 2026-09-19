@@ -290,3 +290,7 @@ ImageTexture::ImageTexture(const char* file):Texture(.3, 1., 0.){
 
 
 }
+
+ImageTexture::~ImageTexture() {
+  free(imageData);
+}

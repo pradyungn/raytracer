@@ -74,9 +74,11 @@ void calcColor(unsigned char *toFill, Autonoma *c, Ray ray,
     const double x = temp.x;
     const double z = temp.z;
     const double me = (temp.y < 0) ? -temp.y : temp.y;
-    const double angle = atan2(z, x);
-    c->skybox->getColor(toFill, &ambient, &opacity, &reflection,
-                        fix(angle / M_TWO_PI), fix(me));
+    double angle = atan2(z, x)/M_TWO_PI;
+
+    if (angle < 0) angle += 1;
+
+    c->skybox->getColor(toFill, &ambient, &opacity, &reflection, angle, me);
     return;
   }
 

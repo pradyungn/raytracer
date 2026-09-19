@@ -20,16 +20,26 @@ bool Sphere::getLightIntersection(Ray ray, double *fill) {
   const double time = (root1 > 0) ? root1 : root2;
   if (time >= 1.)
     return false;
+
   Vector point = ray.point + ray.vector * time;
-  double data2 = (center.y - point.y + radius) / (2 * radius);
-  double data3 = atan2(point.z - center.z, point.x - center.x);
+
+  // bugfix: these were swapped in original code!
+  double data3 = (center.y - point.y + radius) / (2 * radius);
+  double data2 = atan2(point.z - center.z, point.x - center.x);
   unsigned char temp[4];
   double amb, op, ref;
+
+  double getx = (yaw + data2) / M_TWO_PI;
+  if (getx < 0.0) getx += 1.0;
+
+  double gety = fix(pitch / M_TWO_PI - data3);
+
   texture->getColor(temp, &amb, &op, &ref,
-                    fix((yaw + data2) / M_TWO_PI / textureX),
-                    fix((pitch / M_TWO_PI - (data3))) / textureY);
+                    getx, gety);
+
   if (op > 1 - 1E-6)
     return true;
+
   fill[0] *= temp[0] / 255.;
   fill[1] *= temp[1] / 255.;
   fill[2] *= temp[2] / 255.;
@@ -57,10 +67,17 @@ void Sphere::getColor(unsigned char *toFill, double *amb, double *op,
                       [[maybe_unused]] unsigned int depth) {
   double data3 = (center.y - ray.point.y + radius) / (2 * radius);
   double data2 = atan2(ray.point.z - center.z, ray.point.x - center.x);
+
+  double getx = (yaw + data2) / M_TWO_PI;
+  if (getx < 0.0) getx += 1.0;
+
+  double gety = fix(pitch / M_TWO_PI - data3);
+
   texture->getColor(toFill, amb, op, ref,
-                    fix((yaw + data2) / M_TWO_PI / textureX),
-                    fix((pitch / M_TWO_PI - (data3)) / textureY));
+                    getx, gety);
 }
+
+// only called on COLLIDED objects
 Vector Sphere::getNormal(Vector point) {
   Vector vect = point - center;
   /*   A x B = <x, y, z>
@@ -82,6 +99,8 @@ Vector Sphere::getNormal(Vector point) {
   */
   if (normalMap == NULL)
     return vect;
+
+  // point is on sphere surface, so difference is at max radius
   double data3 = (center.y - point.y + radius) / (2 * radius);
   double data2 = atan2(point.z - center.z, point.x - center.x);
   vect = vect.normalize();
@@ -89,9 +108,16 @@ Vector Sphere::getNormal(Vector point) {
   Vector up = Vector(vect.z, vect.y, -vect.x);
   double am, ref, op;
   unsigned char norm[3];
+
+  double getx = ((mapOffX + mapOffX) + data2) / M_TWO_PI / mapX;
+  if (getx >= 1.0) getx -= 1;
+  else if (getx < 0.0) getx += 1;
+
+  double gety = ((mapOffY) / M_PI - data3) / mapY;
+  if (gety < 0.0) gety += 1;
+
   normalMap->getColor(norm, &am, &op, &ref,
-                      fix(((mapOffX + mapOffX) + data2) / M_TWO_PI / mapX),
-                      fix(((mapOffY + mapOffY) / M_TWO_PI - data3) / mapY));
+                      getx, gety);
   return ((norm[0] - 128) * right + (norm[1] - 128) * up + norm[2] * vect)
       .normalize();
 }

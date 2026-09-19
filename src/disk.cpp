@@ -31,8 +31,8 @@ bool Disk::getLightIntersection(Ray ray, double *fill) {
           dist.y * dist.y / (textureY * textureY) >
       1)
     return false;
-  // fix arguments, before offset by .5, are guaranteed to be [-1, 1]
 
+  // fix arguments, before offset by .5, are guaranteed to be [-1, 1]
   // conditional opts will be slower than just doing this normally
   texture->getColor(temp, &amb, &op, &ref, fix(dist.x / textureX - .5),
                     fix(dist.y / textureY - .5));

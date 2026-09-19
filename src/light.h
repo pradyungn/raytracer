@@ -69,6 +69,7 @@ public:
 BVHNode* buildTree(std::vector<SizedShape> list);
 void freeTree(BVHNode* node);
 TimeAndShape isectTree(BVHNode* node, Ray &r);
+bool isectLightTree(BVHNode* node, Ray &r, double* fill);
 void getLight(double* toFill, Autonoma* aut, Vector point, Vector norm, unsigned char r);
 
 #endif

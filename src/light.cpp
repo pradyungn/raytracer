@@ -111,16 +111,11 @@ void getLight(double *tColor, Autonoma *aut, Vector point, Vector norm,
     lightColor[1] = t->data->color[1] / 255.;
     lightColor[2] = t->data->color[2] / 255.;
     Vector ra = t->data->center - point;
-    ShapeNode *shapeIter = aut->listStart;
 
     // keeps going until hit... ?
     // should just pas back object from the outer call. what are we doing.
-    bool hit = false;
-    while (!hit && shapeIter != NULL) {
-      hit = shapeIter->data->getLightIntersection(Ray(point + ra * .01, ra),
-                                                  lightColor);
-      shapeIter = shapeIter->next;
-    }
+    Ray search = Ray(point + ra * .01, ra);
+    bool hit = isectLightTree(aut->shapeTree, search, lightColor);
     double perc = (norm.dot(ra) / (ra.mag() * norm.mag()));
     if (!hit) {
       if (flip && perc < 0)
@@ -207,8 +202,18 @@ BVHNode* buildTree(std::vector<SizedShape> list) {
     auto partition = list.begin() + (list.size()/2);
 
     std::vector<SizedShape> before(list.begin(), partition), after(partition, list.end());
+
+    BVHNode *l, *r;
+
+#pragma omp task shared(l) if(list.size() > 200)
+    l = buildTree(before);
+
+#pragma omp task shared(r) if(list.size() > 200)
+    r = buildTree(after);
+
+#pragma omp taskwait
     return new BVHNode{
-      { superbox[0], superbox[1] }, false, std::vector<Shape*>(), buildTree(before), buildTree(after)
+      { superbox[0], superbox[1] }, false, std::vector<Shape*>(), l, r
     };
   } else {
     std::vector<Shape*> shapes;
@@ -276,3 +281,25 @@ TimeAndShape isectTree(BVHNode* node, Ray &r) {
   }
 }
 
+bool isectLightTree(BVHNode* node, Ray &r, double *fill) {
+  if (node->is_shape) {
+    // return min time over isection with objects
+    for (auto shape: node->shapes) {
+      if(shape->getLightIntersection(r, fill))
+        return true;
+    }
+    return false;
+  } else {
+    // dispatch into left or right (or return inf)
+    double left_time = slabIsect(r, node->left->box);
+    double right_time = slabIsect(r, node->right->box);
+
+    if (left_time == inf && right_time == inf) return false;
+
+    BVHNode* near = left_time < right_time ? node->left : node->right;
+    BVHNode* far  = left_time < right_time ? node->right : node->left;
+    double othertime = left_time < right_time ? right_time : left_time;
+
+    return (isectLightTree(near, r, fill) || (othertime != inf && isectLightTree(far, r, fill)));
+  }
+}

@@ -205,13 +205,9 @@ BVHNode* buildTree(std::vector<SizedShape> list) {
 
     BVHNode *l, *r;
 
-#pragma omp task shared(l) if(list.size() > 200)
     l = buildTree(before);
-
-#pragma omp task shared(r) if(list.size() > 200)
     r = buildTree(after);
 
-#pragma omp taskwait
     return new BVHNode{
       { superbox[0], superbox[1] }, false, std::vector<Shape*>(), l, r
     };

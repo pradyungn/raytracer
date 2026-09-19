@@ -172,7 +172,7 @@ BVHNode* buildTree(std::vector<SizedShape> list) {
     superbox[1].z = std::max(shape.box[1].z, superbox[1].z);
   }
 
-  const unsigned int NODE_MAX_OBJ = 5;
+  const unsigned int NODE_MAX_OBJ = 3;
   if (list.size() > NODE_MAX_OBJ) {
     // decide which extent
     Vector extent = superbox[1] - superbox[0];
@@ -227,3 +227,52 @@ void freeTree(BVHNode* node) {
 
   delete node;
 }
+
+inline double slabIsect(const Ray &r, Vector box[2]) {
+  double xt0 = (box[0].x - r.point.x)/r.vector.x, xt1 = (box[1].x - r.point.x)/r.vector.x;
+  double yt0 = (box[0].y - r.point.y)/r.vector.y, yt1 = (box[1].y - r.point.y)/r.vector.y;
+  double zt0 = (box[0].z - r.point.z)/r.vector.z, zt1 = (box[1].z - r.point.z)/r.vector.z;
+
+  if (xt0 > xt1) std::swap(xt0, xt1);
+  if (yt0 > yt1) std::swap(yt0, yt1);
+  if (zt0 > zt1) std::swap(zt0, zt1);
+
+  double lower = std::max(xt0, std::max(yt0, zt0));
+  double upper = std::min(xt1, std::min(yt1, zt1));
+
+  if (lower > upper) return inf;
+  if (upper < 0) return inf;
+
+  return std::max(lower, 0.0);
+}
+
+TimeAndShape isectTree(BVHNode* node, Ray &r) {
+  if (node->is_shape) {
+    // return min time over isection with objects
+    TimeAndShape mintime = { inf, NULL };
+    for (auto shape: node->shapes) {
+      double time = shape->getIntersection(r);
+      if (time < mintime.time) {
+        mintime = { time, shape };
+      }
+    }
+    return mintime;
+  } else {
+    // dispatch into left or right (or return inf)
+    double left_time = slabIsect(r, node->left->box);
+    double right_time = slabIsect(r, node->right->box);
+
+    if (left_time == inf && right_time == inf) return { inf, NULL };
+
+    BVHNode* near = left_time < right_time ? node->left : node->right;
+    BVHNode* far  = left_time < right_time ? node->right : node->left;
+    double othertime = left_time < right_time ? right_time : left_time;
+
+    TimeAndShape time = isectTree(near, r);
+    if (time.time <= othertime) return time;
+
+    TimeAndShape otherhit = isectTree(far, r);
+    return time.time <= otherhit.time ? time : otherhit;
+  }
+}
+

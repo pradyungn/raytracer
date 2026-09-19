@@ -358,6 +358,8 @@ Autonoma *createInputs(const char *inputFile) {
           MAIN_DATA->addShape(shape);
           shape->normalMap = normalMap;
         }
+        free(points);
+        free(polys);
       } else {
         printf("Unknown object type %s\n", object_type);
         exit(1);
@@ -496,6 +498,7 @@ void setFrame(const char *animateFile, Autonoma *MAIN_DATA, int frame,
     while (ptr != NULL) {
       auto box = ptr->data->getBoundingBox();
       if (box[0].x == inf) {
+        ptr = ptr->next;
         continue;
       }
       Vector center = (box[0] + box[1])/2.0;
@@ -671,6 +674,7 @@ int main(int argc, const char **argv) {
     free(tmp);
   }
 
+  // maybe move into a destructor for Autonoma
   auto ptr = MAIN_DATA->listStart;
   while (ptr != NULL) {
     auto tmp = ptr;

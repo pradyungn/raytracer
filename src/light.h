@@ -32,6 +32,11 @@ struct SizedShape {
   std::array<Vector, 2> box;
 };
 
+typedef struct {
+  double time;
+  Shape *shape;
+} TimeAndShape;
+
 struct BVHNode {
   // bounding box
   Vector box[2];
@@ -63,6 +68,7 @@ public:
 
 BVHNode* buildTree(std::vector<SizedShape> list);
 void freeTree(BVHNode* node);
+TimeAndShape isectTree(BVHNode* node, Ray &r);
 void getLight(double* toFill, Autonoma* aut, Vector point, Vector norm, unsigned char r);
 
 #endif

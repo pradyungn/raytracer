@@ -34,11 +34,6 @@ void Shape::setRoll(double c) {
   zsin = sin(roll);
 }
 
-typedef struct {
-  double time;
-  Shape *shape;
-} TimeAndShape;
-
 void insertionSort(TimeAndShape *arr, int n) {
   for (int i = 1; i < n; ++i) {
     TimeAndShape key = arr[i];
@@ -53,16 +48,24 @@ void insertionSort(TimeAndShape *arr, int n) {
 
 void calcColor(unsigned char *toFill, Autonoma *c, Ray ray,
                unsigned int depth) {
-  ShapeNode *t = c->listStart;
-  TimeAndShape mintime = {inf, NULL};
-
+  // ShapeNode *t = c->listStart;
+  // TimeAndShape mintime = {inf, NULL};
   // linked list iteration, pull running minimum
-  while (t != NULL) {
-    double time = t->data->getIntersection(ray);
+  // while (t != NULL) {
+  //   double time = t->data->getIntersection(ray);
+  //   if (time < mintime.time) {
+  //     mintime = {time, t->data};
+  //   }
+  //   t = t->next;
+  // }
+
+  // split into a tree isection and then a plane check
+  TimeAndShape mintime = isectTree(c->shapeTree, ray);
+  for (auto shape: c->planes) {
+    double time = shape->getIntersection(ray);
     if (time < mintime.time) {
-      mintime = {time, t->data};
+      mintime = { time, shape };
     }
-    t = t->next;
   }
 
   if (mintime.time == inf) {

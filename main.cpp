@@ -661,5 +661,27 @@ int main(int argc, const char **argv) {
   }
 
   freeTree(MAIN_DATA->shapeTree);
+
+  auto lptr = MAIN_DATA->lightStart;
+  while (lptr != NULL) {
+    auto tmp = lptr;
+    free(lptr->data->color);
+    delete lptr->data;
+    lptr = lptr->next;
+    free(tmp);
+  }
+
+  auto ptr = MAIN_DATA->listStart;
+  while (ptr != NULL) {
+    auto tmp = ptr;
+    delete ptr->data->texture;
+    delete ptr->data->normalMap;
+    delete ptr->data;
+    ptr = ptr->next;
+    free(tmp);
+  }
+
+  delete MAIN_DATA->skybox;
+  delete MAIN_DATA;
   return 0;
 }

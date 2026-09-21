@@ -256,8 +256,10 @@ Autonoma *createInputs(const char *inputFile) {
         Texture *texture = parseTexture(f, false);
         Plane *shape = new Plane(Vector(plane_x, plane_y, plane_z), texture,
                                  yaw, pitch, roll, tx, ty);
-        MAIN_DATA->addShape(shape);
         shape->normalMap = parseTexture(f, true);
+        MAIN_DATA->textures.push_back(texture);
+        MAIN_DATA->textures.push_back(shape->normalMap);
+        MAIN_DATA->addShape(shape);
       } else if (streq(object_type, "disk")) {
         double disk_x, disk_y, disk_z;
         double yaw, pitch, roll;
@@ -271,8 +273,10 @@ Autonoma *createInputs(const char *inputFile) {
         Texture *texture = parseTexture(f, false);
         Disk *shape = new Disk(Vector(disk_x, disk_y, disk_z), texture, yaw,
                                pitch, roll, tx, ty);
-        MAIN_DATA->addShape(shape);
         shape->normalMap = parseTexture(f, true);
+        MAIN_DATA->textures.push_back(texture);
+        MAIN_DATA->addShape(shape);
+        MAIN_DATA->textures.push_back(shape->normalMap);
       } else if (streq(object_type, "box")) {
         double box_x, box_y, box_z;
         double yaw, pitch, roll;
@@ -286,8 +290,10 @@ Autonoma *createInputs(const char *inputFile) {
         Texture *texture = parseTexture(f, false);
         Box *shape = new Box(Vector(box_x, box_y, box_z), texture, yaw, pitch,
                              roll, tx, ty);
-        MAIN_DATA->addShape(shape);
         shape->normalMap = parseTexture(f, true);
+        MAIN_DATA->textures.push_back(texture);
+        MAIN_DATA->textures.push_back(shape->normalMap);
+        MAIN_DATA->addShape(shape);
       } else if (streq(object_type, "triangle")) {
         double x1, y1, z1;
         double x2, y2, z2;
@@ -301,8 +307,10 @@ Autonoma *createInputs(const char *inputFile) {
         Texture *texture = parseTexture(f, false);
         Triangle *shape = new Triangle(Vector(x1, y1, z1), Vector(x2, y2, z2),
                                        Vector(x3, y3, z3), texture);
-        MAIN_DATA->addShape(shape);
         shape->normalMap = parseTexture(f, true);
+        MAIN_DATA->textures.push_back(texture);
+        MAIN_DATA->addShape(shape);
+        MAIN_DATA->textures.push_back(shape->normalMap);
       } else if (streq(object_type, "sphere")) {
         double sphere_x, sphere_y, sphere_z;
         double yaw, pitch, roll;
@@ -316,8 +324,10 @@ Autonoma *createInputs(const char *inputFile) {
         Texture *texture = parseTexture(f, false);
         Sphere *shape = new Sphere(Vector(sphere_x, sphere_y, sphere_z),
                                    texture, yaw, pitch, roll, radius);
-        MAIN_DATA->addShape(shape);
         shape->normalMap = parseTexture(f, true);
+        MAIN_DATA->addShape(shape);
+        MAIN_DATA->textures.push_back(texture);
+        MAIN_DATA->textures.push_back(shape->normalMap);
       } else if (streq(object_type, "mesh")) {
         char point_filepath[100];
         char poly_filepath[100];
@@ -335,6 +345,8 @@ Autonoma *createInputs(const char *inputFile) {
         }
         Texture *texture = parseTexture(f, false);
         Texture *normalMap = parseTexture(f, true);
+        MAIN_DATA->textures.push_back(texture);
+        MAIN_DATA->textures.push_back(normalMap);
 
         FILE *vectors = fopen(point_filepath, "r"),
              *triangles = fopen(poly_filepath, "r");
@@ -646,6 +658,17 @@ int main(int argc, const char **argv) {
   gettimeofday(&end, NULL);
   printf("Total time to create images=%0.6f seconds\n", tdiff(&start, &end));
 
+  freeTree(MAIN_DATA->shapeTree);
+
+  auto lptr = MAIN_DATA->lightStart;
+  while (lptr != NULL) {
+    auto tmp = lptr;
+    free(lptr->data->color);
+    delete lptr->data;
+    lptr = lptr->next;
+    free(tmp);
+  }
+
   if (frameLen > 1 && toMovie) {
     if (png) {
       snprintf(command, sizeof(command),
@@ -660,32 +683,27 @@ int main(int argc, const char **argv) {
                "24 %s",
                outFile, outFile, outFile, outFile);
     }
-    return system(command);
-  }
-
-  freeTree(MAIN_DATA->shapeTree);
-
-  auto lptr = MAIN_DATA->lightStart;
-  while (lptr != NULL) {
-    auto tmp = lptr;
-    free(lptr->data->color);
-    delete lptr->data;
-    lptr = lptr->next;
-    free(tmp);
   }
 
   // maybe move into a destructor for Autonoma
   auto ptr = MAIN_DATA->listStart;
   while (ptr != NULL) {
     auto tmp = ptr;
-    delete ptr->data->texture;
-    delete ptr->data->normalMap;
     delete ptr->data;
     ptr = ptr->next;
     free(tmp);
   }
 
-  delete MAIN_DATA->skybox;
+  for (auto ptr: MAIN_DATA->textures)
+    delete ptr;
+
+  if (MAIN_DATA->skybox != NULL)
+    delete MAIN_DATA->skybox;
   delete MAIN_DATA;
+
+  if (frameLen > 1 && toMovie) {
+    return system(command);
+  }
+
   return 0;
 }

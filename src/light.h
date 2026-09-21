@@ -57,6 +57,7 @@ public:
    ShapeNode *listStart, *listEnd;
    LightNode *lightStart, *lightEnd;
    std::vector<Shape*> planes;
+   std::vector<Texture*> textures;
    BVHNode* shapeTree;
    Autonoma(const Camera &c);
    Autonoma(const Camera &c, Texture* tex);

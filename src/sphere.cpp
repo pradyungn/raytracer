@@ -3,7 +3,7 @@
 Sphere::Sphere(const Vector &c, Texture *t, double ya, double pi, double ro,
                double rad)
     : Shape(c, t, ya, pi, ro) {
-  textureX = textureY = 1.;
+  mapX = mapY = textureX = textureY = 1.;
   normalMap = NULL;
   radius = rad;
 }

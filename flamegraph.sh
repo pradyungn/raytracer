@@ -14,7 +14,7 @@ case $1 in
     ;;
 
     "elephant")
-         COMMAND="./main.exe -i inputs/elephant.ray --ppm  -a inputs/elephant.animate -F 24"
+         COMMAND="./main.exe -i inputs/elephant.ray --ppm  -a inputs/elephant.animate -F 24 -W 100 -H 100"
     ;;
 
     *)

@@ -1,6 +1,6 @@
 # 09-10 Cavs Artifact instructions
 
-Standard compilation flow still holds (`make all` in the root of the repo) to build our artifact.
+Standard compilation flow still holds (`make all` in the root of the repo) to build our artifact. The Dockerfile in `/docker` has been updated to reflect the image we used to test our project.
 
 We have provided a helper utility called `flamegraph.sh`. This can be used to run each of the different basic testcases discused in the README with their intended resolutions.
 
